@@ -21,6 +21,7 @@ class Mangler():
                  lang not in self.blacklist]
         return random.choice(langs)
     
+    @staticmethod
     def parse_txt(file: str) -> Generator[str]:
          with open(file, "r", encoding = "utf-8") as txt:
             return (line.strip() for line in txt.readlines())
@@ -31,19 +32,21 @@ class Mangler():
         yield from [" ".join(re.sub(regex, '', word).split("-")) for word in line.split()]
 
     def random_translate(self, word: str) -> str:
-        trans_word = translator.translate(word, src = "en", dest = random_lang()).pronunciation
+        lang = self.random_lang()
+        trans_word = translator.translate(word, src = "en", 
+                                          dest = lang).pronunciation
         if trans_word:
             return trans_word
         else:
-            self.blacklist..append(lang)
-            return random_translate(word)
+            self.blacklist.append(lang)
+            return self.random_translate(word)
     
     def get_mangled_lines(self) -> Generator[str]:
-        lines = parse_txt(self.in_file)
+        lines = self.parse_txt(self.in_file)
         for line in lines:
             if line.strip():
-                yield " ".join([random_translate(word) 
-                                for word in get_words(line) if word])
+                yield " ".join([self.random_translate(word) 
+                                for word in self.get_words(line) if word])
                                 
     @staticmethod
     def clean_line(line: str) -> str:
@@ -54,7 +57,7 @@ class Mangler():
 
     def dump_new_lines(self, lines) -> None:
         for i, line in enumerate(lines):
-            lines[i] = clean_line(line)
+            lines[i] = self.clean_line(line)
         with open(self.out_file, "w+", encoding = "utf-8") as txt:
             txt.writelines(lines)
     
@@ -64,7 +67,7 @@ class Mangler():
                    for word in line.split()]
         for word in en_line:
             if is_romaji(word):
-                yield clean_hiragana(to_hiragana(word))
+                yield Mangler.clean_hiragana(to_hiragana(word))
             else:
                 continue 
                 
@@ -82,7 +85,7 @@ def main():
                       mangler.mangled_to_hiragana(line)]))
                       for line in mangled_lines if line]
     jp_out = os.splittext(os.path.basename(outfile)) + "_jp.txt"
-    mangler.dump_new_lines(hiragana_lines, )
+    mangler.dump_new_lines(hiragana_lines,jp_out )
      
 if __name__ == "__main__":
     sys.exit(main())
