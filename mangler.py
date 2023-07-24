@@ -84,7 +84,7 @@ def main():
     hiragana_lines = [(" ".join([word for word in 
                       mangler.mangled_to_hiragana(line)]))
                       for line in mangled_lines if line]
-    jp_out = os.splittext(os.path.basename(outfile)) + "_jp.txt"
+    jp_out = os.splitext(os.path.basename(outfile)) + "_jp.txt"
     mangler.dump_new_lines(hiragana_lines,jp_out )
      
 if __name__ == "__main__":
