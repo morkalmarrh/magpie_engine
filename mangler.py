@@ -11,7 +11,6 @@ INVALID = ("ぅ", "ぃ", "ぇ", "ぁ", "ぉ", "ゃ", "っ", "ー", "ょ", "ゅ")
 @dataclass
 class Mangler():
     in_file: str
-    out_file: str
     
     def __post_init__(self):
         self.blacklist = ["en", "eo"]
@@ -55,10 +54,11 @@ class Mangler():
             line =  re.sub('\s+',' ', line)
         return line.strip(" ") + "\n"
 
-    def dump_new_lines(self, lines) -> None:
+    @staticmethod
+    def dump_new_lines(lines: list, outfile: str) -> None:
         for i, line in enumerate(lines):
-            lines[i] = self.clean_line(line)
-        with open(self.out_file, "w+", encoding = "utf-8") as txt:
+            lines[i] = Mangler.clean_line(line)
+        with open(outfile, "w+", encoding = "utf-8") as txt:
             txt.writelines(lines)
     
     @staticmethod
@@ -79,13 +79,14 @@ class Mangler():
 def main():
     file = sys.argv[1]
     outfile = sys.argv[2]
-    mangler = Mangler(file, outfile)
+    mangler = Mangler(file)
     mangled_lines = [line for line in mangler.get_mangled_lines()]
+    mangler.dump_new_lines(mangled_lines, outfile)
     hiragana_lines = [(" ".join([word for word in 
                       mangler.mangled_to_hiragana(line)]))
                       for line in mangled_lines if line]
     jp_out = os.path.splitext(os.path.basename(outfile))[0] + "_jp.txt"
-    mangler.dump_new_lines(hiragana_lines,jp_out )
+    mangler.dump_new_lines(hiragana_lines, jp_out)
      
 if __name__ == "__main__":
     sys.exit(main())
