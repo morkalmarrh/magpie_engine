@@ -6,7 +6,7 @@ import re
 from wanakana import to_hiragana, is_romaji, is_hiragana
 
 translator = googletrans.Translator()
-INVALID = ("ぅ", "ぃ", "ぇ", "ぁ", "ぉ", "ゃ", "っ", "ー", "ょ")
+INVALID = ("ぅ", "ぃ", "ぇ", "ぁ", "ぉ", "ゃ", "っ", "ー", "ょ", "ゅ")
 
 def random_lang(blacklist: list) -> str:
     blacklist.extend(["en", "eo"])
@@ -44,7 +44,7 @@ def clean_line(line: str) -> str:
     line = line.replace(".", "")
     while '  ' in line:
         line =  re.sub('\s+',' ', line)
-    return line.strip(" ") + ".\n"
+    return line.strip(" ") + "\n"
 
 
 def dump_new_lines(lines: list, outfile: str):
